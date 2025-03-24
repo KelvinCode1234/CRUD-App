@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import './index.css';
 
+// Define Item type
 interface Item {
   id: number;
   name: string;
@@ -18,6 +18,7 @@ const App: React.FC = () => {
   const [editName, setEditName] = useState<string>("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastColor, setToastColor] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -36,14 +37,7 @@ const App: React.FC = () => {
   const showToast = (message: string, color: string) => {
     setToastMessage(message);
     setToastColor(color);
-    setTimeout(() => setToastMessage(null), 3200);
-  };
-
-  const handleAction = (action: () => void) => {
-    if (isProcessing) return;
-    setIsProcessing(true);
-    action();
-    setTimeout(() => setIsProcessing(false), 1000);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const addItem = (): void => {
@@ -73,10 +67,14 @@ const App: React.FC = () => {
       showToast("Name cannot be empty!", "danger");
       return;
     }
-    setItems(items.map((item) => (item.id === editId ? { ...item, name: editName } : item)));
-    setEditId(null);
-    setEditName("");
-    showToast("Item updated successfully!", "warning");
+    setIsSaving(true);
+    setTimeout(() => {
+      setItems(items.map((item) => (item.id === editId ? { ...item, name: editName } : item)));
+      setEditId(null);
+      setEditName("");
+      setIsSaving(false);
+      showToast("Item updated successfully!", "warning");
+    }, 1000);
   };
 
   return (
@@ -88,10 +86,12 @@ const App: React.FC = () => {
         <span className="text-warning">D</span> App
       </h1>
 
-      <button className="btn btn-primary mt-3" onClick={() => handleAction(addItem)}>
+      {/* Add Item Button (Always Enabled) */}
+      <button className="btn btn-primary mt-3" onClick={addItem}>
         Add New Item
       </button>
 
+      {/* Dark Mode Toggle */}
       <button className="btn btn-secondary ms-3 mt-3" onClick={() => setDarkMode(!darkMode)}>
         {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button>
@@ -123,15 +123,15 @@ const App: React.FC = () => {
               </td>
               <td>
                 {editId === item.id ? (
-                  <button className="btn btn-success btn-sm me-2" onClick={saveEdit}>
-                    Save
+                  <button className="btn btn-success btn-sm me-2" onClick={saveEdit} disabled={isSaving}>
+                    {isSaving ? "Saving..." : "Save"}
                   </button>
                 ) : (
                   <>
-                    <button className="btn btn-warning btn-sm me-2" onClick={() => startEditing(item)} disabled={isProcessing}>
+                    <button className="btn btn-warning btn-sm me-2" onClick={() => startEditing(item)}>
                       Edit
                     </button>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleAction(() => deleteItem(item.id))} disabled={isProcessing}>
+                    <button className="btn btn-danger btn-sm" onClick={() => deleteItem(item.id)}>
                       Delete
                     </button>
                   </>
@@ -160,3 +160,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
