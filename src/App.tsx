@@ -10,7 +10,7 @@ interface Item {
 const App: React.FC = () => {
   const [items, setItems] = useState<Item[]>(() => {
     const savedItems = localStorage.getItem("crudItems");
-    return savedItems ? JSON.parse(savedItems) : [{ id: 1, name: "Sample Item" }];
+    return savedItems ? JSON.parse(savedItems) : [{ id: 1 + '.', name: "Sample Item" }];
   });
 
   const [editId, setEditId] = useState<number | null>(null);
