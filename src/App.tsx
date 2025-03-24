@@ -18,7 +18,6 @@ const App: React.FC = () => {
   const [editName, setEditName] = useState<string>("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastColor, setToastColor] = useState<string>("");
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -89,7 +88,7 @@ const App: React.FC = () => {
         <span className="text-warning">D</span> App
       </h1>
 
-      <button className="btn btn-primary mt-3" onClick={() => handleAction(addItem)} disabled={isProcessing}>
+      <button className="btn btn-primary mt-3" onClick={() => handleAction(addItem)}>
         Add New Item
       </button>
 
