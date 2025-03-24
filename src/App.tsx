@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import './index.css';
 
 interface Item {
   id: number;
@@ -10,9 +11,10 @@ interface Item {
 const App: React.FC = () => {
   const [items, setItems] = useState<Item[]>(() => {
     const savedItems = localStorage.getItem("crudItems");
-    return savedItems ? JSON.parse(savedItems) : [{ id: 1 + '.', name: "Sample Item" }];
+    return savedItems ? JSON.parse(savedItems) : [{ id: 1, name: "Sample Item" }];
   });
 
+  const [newItemName, setNewItemName] = useState<string>("");
   const [editId, setEditId] = useState<number | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -39,13 +41,13 @@ const App: React.FC = () => {
   };
 
   const addItem = (): void => {
-    if (!editName.trim()) {
+    if (!newItemName.trim()) {
       showToast("Name cannot be empty!", "danger");
       return;
     }
-    const newItem: Item = { id: items.length + 1, name: editName.trim() };
+    const newItem: Item = { id: items.length + 1, name: newItemName.trim() };
     setItems([...items, newItem]);
-    setEditName("");
+    setNewItemName("");
     showToast("Item added successfully!", "success");
   };
 
@@ -80,11 +82,20 @@ const App: React.FC = () => {
         <span className="text-warning">D</span> App
       </h1>
 
-      <button className="btn btn-primary mt-3" onClick={addItem}>
-        Add New Item
-      </button>
+      <div className="input-group mt-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Enter item name"
+          value={newItemName}
+          onChange={(e) => setNewItemName(e.target.value)}
+        />
+        <button className="btn btn-primary" onClick={addItem}>
+          Add New Item
+        </button>
+      </div>
 
-      <button className="btn btn-secondary ms-3 mt-3" onClick={() => setDarkMode(!darkMode)}>
+      <button className="btn btn-secondary mt-3" onClick={() => setDarkMode(!darkMode)}>
         {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button>
 
